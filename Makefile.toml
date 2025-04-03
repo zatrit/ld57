@@ -1,0 +1,34 @@
+[env]
+BINARY = "ld57"
+PROFILE = "release"
+
+[tasks.build]
+description = "Runs the rust compiler."
+category = "Build"
+command = "cargo"
+args = ["build", "--profile", "${PROFILE}"]
+
+[tasks.export]
+windows_alias = "export-windows"
+linux_alias = "export-linux"
+
+[tasks.export-linux]
+description = "Package for Linux: produce package.tar.zst"
+dependencies = ["build"]
+command = "tar"
+args = [
+  "-I zstd",
+  "-cvf",
+  "package.tar.zst",
+  "-C",
+  "target/${PROFILE}",
+  "${BINARY}",
+  "manifest.json",
+  "content.tar.zst",
+]
+
+[tasks.export-windows]
+description = "Package for Windows: produce package.zip"
+dependencies = ["build"]
+command = "powershell"
+args = ["-Command", "Compress-Archive -Path .\\target\\${PROFILE}\\${BINARY}.exe, .\\target\\${PROFILE}\\manifest.json, .\\target\\${PROFILE}\\content.tar.zst -DestinationPath .\\package.zip"]

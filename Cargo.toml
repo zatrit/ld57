@@ -1,0 +1,14 @@
+[package]
+name = "ld57"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+alpacker = { git = "https://github.com/zatrit/alpacker.git", features = [
+  "aseprite",
+  "raylib",
+] }
+
+[build-dependencies]
+alpacker = { git = "https://github.com/zatrit/alpacker.git" }
+alpacker-packer = { git = "https://github.com/zatrit/alpacker.git" }
