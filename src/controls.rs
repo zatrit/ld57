@@ -3,8 +3,8 @@ use serde::{Serialize, Serializer, ser::SerializeMap};
 
 use crate::update::UpdateData;
 
-const PIXELS_PER_SECOND: f32 = 75.;
-const DEGREES_PER_SECOND: f32 = 60.;
+const PIXELS_PER_SECOND: f32 = 0.05;
+const DEGREES_PER_SECOND: f32 = 0.04;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Controls {
@@ -45,7 +45,7 @@ impl Controls {
     pub fn update(&self, update_data: &mut UpdateData, pos: &mut Vector2, rotation: &mut f32) {
         let UpdateData { raylib, delta_time } = update_data;
 
-        let d = delta_time.as_secs_f32() * PIXELS_PER_SECOND;
+        let d = *delta_time * PIXELS_PER_SECOND;
 
         let dx = (axis(raylib, self.right) - axis(raylib, self.left)) * d;
         pos.x += dx;
@@ -53,7 +53,7 @@ impl Controls {
         let dy = (axis(raylib, self.down) - axis(raylib, self.up)) * d;
         pos.y += dy;
 
-        let d = delta_time.as_secs_f32() * DEGREES_PER_SECOND;
+        let d = *delta_time * DEGREES_PER_SECOND;
         *rotation += (axis(raylib, self.clockwise) - axis(raylib, self.counter_clockwise)) * d;
     }
 }
