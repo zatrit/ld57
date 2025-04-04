@@ -14,7 +14,7 @@ dependencies = [
 [[package]]
 name = "alpacker"
 version = "0.1.0"
-source = "git+https://github.com/zatrit/alpacker.git#2f1f9a6c35c32edecd304652f0cf3f49cd48ccbc"
+source = "git+https://github.com/zatrit/alpacker.git#51a488d4705e62d9ad37d2930ae2a0b0f8c972df"
 dependencies = [
  "aseprite",
  "raylib",
@@ -29,7 +29,7 @@ dependencies = [
 [[package]]
 name = "alpacker-packer"
 version = "0.1.0"
-source = "git+https://github.com/zatrit/alpacker.git#2f1f9a6c35c32edecd304652f0cf3f49cd48ccbc"
+source = "git+https://github.com/zatrit/alpacker.git#51a488d4705e62d9ad37d2930ae2a0b0f8c972df"
 dependencies = [
  "alpacker",
  "glob",

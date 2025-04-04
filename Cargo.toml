@@ -4,10 +4,17 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-alpacker = { git = "https://github.com/zatrit/alpacker.git", features = [
+alpacker = { git = "https://github.com/zatrit/alpacker.git", default-features = false, features = [
   "aseprite",
   "raylib",
+  "tarzst"
 ] }
+
+[features]
+default = ["fs"]
+
+fs = ["alpacker/fs"]
+web = []
 
 [build-dependencies]
 alpacker = { git = "https://github.com/zatrit/alpacker.git" }

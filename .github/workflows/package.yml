@@ -1,6 +1,6 @@
 # I wrote this with ChatGPT
 # Vibe DevOpsing
-name: Build and Export
+name: Build Native
 
 on:
   workflow_dispatch:

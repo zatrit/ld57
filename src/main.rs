@@ -1,13 +1,15 @@
+use std::{env::current_exe, error::Error};
+
 use alpacker::{Assets, Pack, pack::TarZstPack};
 
-fn main() {
-    let mut assets = Assets::load_from_dir("./");
-    if assets.is_err() && cfg!(debug_assertions) {
-        assets = Assets::load_from_dir("./target/debug");
-    }
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut binary_path = current_exe()?;
+    binary_path.pop();
 
-    let assets = assets.unwrap();
-    let mut content = assets.load_pack::<TarZstPack>("content").unwrap();
+    let assets = Assets::load_from_dir(binary_path)?;
+    let mut content = assets.load_pack::<TarZstPack>("content")?;
 
-    print!("{}", content.get::<String>("hello_world.txt").unwrap());
+    print!("{}", content.get::<String>("hello_world.txt")?);
+
+    Ok(())
 }
