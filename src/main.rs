@@ -28,7 +28,7 @@ fn rand_color() -> Color {
 fn main() -> Result<()> {
     println!("Loading assets...");
     let mut content = load_content()?;
-    let text = content.get::<String>("hello_world.txt")?;
+    let text = content.get::<String>("hello_world.txt")?.trim().to_owned();
 
     let (mut rl, thread) = raylib::init()
         .resizable()
