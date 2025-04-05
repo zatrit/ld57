@@ -20,16 +20,12 @@ pub struct Game {
     pub content: TarZstPack,
 }
 
-fn rand_color() -> Color {
-    Color::new(rand::random(), rand::random(), rand::random(), 255)
-}
-
 impl Game {
     fn update(&mut self) -> bool {
         let Self { raylib, thread, .. } = self;
 
         let mut d = raylib.begin_drawing(&thread);
-        d.clear_background(rand_color());
+        d.clear_background(Color::GRAY);
         drop(d);
 
         cfg!(not(target_arch = "wasm32")) && raylib.window_should_close()
