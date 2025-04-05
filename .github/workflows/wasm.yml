@@ -18,6 +18,7 @@ jobs:
         with:
           toolchain: nightly
           targets: wasm32-unknown-emscripten
+          components: rust-src
 
       - name: Cache Cargo registry and build artifacts
         uses: Swatinem/rust-cache@v2
