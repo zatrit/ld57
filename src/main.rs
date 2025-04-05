@@ -2,16 +2,18 @@ use std::{cell::RefCell, io};
 
 use alpacker::{Pack, pack::TarZstPack};
 use anyhow::Ok;
-use raylib::{RaylibHandle, RaylibThread, color::Color, prelude::RaylibDraw};
+use raylib::{RaylibHandle, RaylibThread};
+use state::GameState;
 
+mod state;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 const CONTENT: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/content.tar.zst"));
-const FPS: i32 = 60;
 
 thread_local! {
     static GAME: RefCell<Option<Game>> = RefCell::new(None);
+    static STATE: RefCell<GameState> = RefCell::new(GameState::Loading);
 }
 
 pub struct Game {
@@ -22,26 +24,19 @@ pub struct Game {
 
 impl Game {
     fn update(&mut self) -> bool {
-        let Self { raylib, thread, .. } = self;
-
-        let mut d = raylib.begin_drawing(&thread);
-        d.clear_background(Color::GRAY);
-        drop(d);
-
-        cfg!(not(target_arch = "wasm32")) && raylib.window_should_close()
+        STATE.with_borrow_mut(|state| state.update(self))
     }
 }
 
 fn main() -> anyhow::Result<()> {
     let content = TarZstPack::load(io::Cursor::new(CONTENT))?;
 
-    let (mut raylib, thread) = raylib::init()
+    let (raylib, thread) = raylib::init()
         .resizable()
         .size(640, 480)
         .title("Hello, World")
+        .vsync()
         .build();
-
-    raylib.set_target_fps(FPS as u32);
 
     let new_game = Game {
         content,
