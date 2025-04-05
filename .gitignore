@@ -1,3 +1,6 @@
 /target
-package.tar.zst
-package.zip
+/package.tar.zst
+/package-web.tar.zst
+/package.zip
+/web/*.wasm
+/web/*.js

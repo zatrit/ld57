@@ -1,0 +1,35 @@
+# I wrote this with ChatGPT
+# Vibe DevOpsing
+name: Build WASM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
+          targets: wasm32-unknown-emscripten
+
+      - name: Cache Cargo registry and build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Cargo Make
+        run: cargo install cargo-make
+
+      - name: Run Cargo Make export task
+        run: cargo make export-wasm
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-web
+          path: package-web.*

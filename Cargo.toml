@@ -2,20 +2,34 @@
 name = "ld57"
 version = "0.1.0"
 edition = "2024"
+publish = false
 
 [dependencies]
+anyhow = "1.0"
 alpacker = { git = "https://github.com/zatrit/alpacker.git", default-features = false, features = [
   "aseprite",
   "raylib",
-  "tarzst"
+  "tarzst",
 ] }
+raylib = "5.5"
+rand = "0.9.0"
 
 [features]
 default = ["fs"]
 
 fs = ["alpacker/fs"]
-web = []
+extra-debug = ["anyhow/backtrace"]
 
 [build-dependencies]
 alpacker = { git = "https://github.com/zatrit/alpacker.git" }
 alpacker-packer = { git = "https://github.com/zatrit/alpacker.git" }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+opt-level = 3
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"

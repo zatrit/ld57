@@ -28,6 +28,8 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
 
       - name: Cache Cargo registry and build artifacts
         uses: Swatinem/rust-cache@v2

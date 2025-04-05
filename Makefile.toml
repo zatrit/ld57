@@ -1,6 +1,8 @@
 [env]
 BINARY = "ld57"
 PROFILE = "release"
+WASM_TARGET = "wasm32-unknown-emscripten"
+PORT = "8080"
 
 [tasks.build]
 description = "Runs the rust compiler."
@@ -24,8 +26,6 @@ args = [
   "-C",
   "target/${PROFILE}",
   "${BINARY}",
-  "manifest.json",
-  "content.tar.zst",
 ]
 
 [tasks.export-windows]
@@ -33,4 +33,40 @@ description = "Package for Windows: produce package.zip"
 dependencies = ["build"]
 condition = { platforms = ["windows"] }
 command = "powershell"
-args = ["-Command", "Compress-Archive -Path .\\target\\${PROFILE}\\${BINARY}.exe, .\\target\\${PROFILE}\\manifest.json, .\\target\\${PROFILE}\\content.tar.zst -DestinationPath .\\package.zip"]
+args = [
+  "-Command",
+  "Compress-Archive -Path .\\target\\${PROFILE}\\${BINARY}.exe -DestinationPath .\\package.zip",
+]
+
+[tasks.build-wasm]
+description = "Runs the rust compiler for WASM."
+category = "Build"
+command = "cargo"
+args = ["build", "--profile", "${PROFILE}", "--target", "${WASM_TARGET}"]
+
+[tasks.export-wasm]
+description = "Package for Web: produce package.tar.zst"
+dependencies = ["build-wasm"]
+command = "tar"
+args = [
+  "-I zstd",
+  "-cvf",
+  "package-web.tar.zst",
+  "-C",
+  "./web/",
+  "index.html",
+  "-C",
+  "../target/${WASM_TARGET}/${PROFILE}",
+  "${BINARY}.wasm",
+  "${BINARY}.js",
+]
+
+[tasks.run-wasm]
+description = "Run web test environment"
+script_runner = "@shell"
+dependencies = ["build-wasm"]
+script = '''
+cp ./target/${WASM_TARGET}/${PROFILE}/${BINARY}.wasm ./web/
+cp ./target/${WASM_TARGET}/${PROFILE}/${BINARY}.js ./web/
+python -m http.server ${PORT} -d ./web/
+'''
