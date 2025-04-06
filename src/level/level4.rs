@@ -52,6 +52,7 @@ impl Level4 {
         }
 
         let mut d = rl.begin_drawing(&thread);
+        d.clear_background(Color::BLACK);
         d.draw_circle(
             self.center_x as i32,
             self.center_y as i32,
