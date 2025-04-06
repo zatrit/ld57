@@ -2,9 +2,9 @@
 EMCC_CFLAGS="-O3 -sUSE_GLFW=3 -sASSERTIONS=1 -sWASM=1 -sASYNCIFY -sGL_ENABLE_GET_PROC_ADDRESS=1"
 
 [build]
-rustflags = ["-Zlocation-detail=none", "-Zfmt-debug=none"]
+#rustflags = ["-Zlocation-detail=none", "-Zfmt-debug=none"]
 
 [unstable]
 mtime-on-use = true
-build-std-features = ["panic_immediate_abort"]
-build-std = ["std", "core", "alloc", "panic_abort"]
+#build-std-features = ["panic_immediate_abort"]
+#build-std = ["std", "core", "alloc", "panic_abort"]

@@ -13,6 +13,8 @@ alpacker = { git = "https://github.com/zatrit/alpacker.git", default-features = 
 ] }
 raylib = "5.5"
 rand = "0.9.0"
+aseprite = "0.1.3"
+serde = { version = "1.0.219", features = ["derive"] }
 
 [features]
 default = ["fs"]
@@ -25,11 +27,11 @@ alpacker = { git = "https://github.com/zatrit/alpacker.git" }
 alpacker-packer = { git = "https://github.com/zatrit/alpacker.git" }
 
 [profile.dev]
-panic = "abort"
+#panic = "abort"
 
 [profile.release]
 opt-level = 3
 strip = true
 lto = true
 codegen-units = 1
-panic = "abort"
+#panic = "abort"

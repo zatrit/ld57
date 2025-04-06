@@ -2,23 +2,39 @@ use std::{cell::RefCell, io};
 
 use alpacker::{Pack, pack::TarZstPack};
 use anyhow::Ok;
-use raylib::{RaylibHandle, RaylibThread};
-use state::GameState;
+use controls::Controls;
+use level::level4::Level4;
+use raylib::{
+    RaylibHandle, RaylibThread,
+    camera::{Camera, Camera2D},
+    math::Vector2,
+};
+use state::State;
 
-mod state;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
+
+mod controls;
+mod level;
+mod player;
+mod sprite;
+mod state;
 
 const CONTENT: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/content.tar.zst"));
 
 thread_local! {
     static GAME: RefCell<Option<Game>> = RefCell::new(None);
-    static STATE: RefCell<GameState> = RefCell::new(GameState::Loading);
+    static STATE: RefCell<State> = RefCell::new(State::Level4(Level4::new()));
+}
+
+pub struct Raylib {
+    rl: RaylibHandle,
+    thread: RaylibThread,
 }
 
 pub struct Game {
-    pub raylib: RaylibHandle,
-    pub thread: RaylibThread,
+    pub raylib: Raylib,
+    pub controls: Controls,
     pub content: TarZstPack,
 }
 
@@ -31,17 +47,18 @@ impl Game {
 fn main() -> anyhow::Result<()> {
     let content = TarZstPack::load(io::Cursor::new(CONTENT))?;
 
-    let (raylib, thread) = raylib::init()
+    let (mut raylib, thread) = raylib::init()
         .resizable()
-        .size(640, 480)
-        .title("Hello, World")
+        .size(640, 360)
+        .title("Yet another Dream")
         .vsync()
         .build();
+    raylib.set_exit_key(None);
 
     let new_game = Game {
+        raylib: Raylib { rl: raylib, thread },
+        controls: Controls::DEFAULT,
         content,
-        raylib,
-        thread,
     };
 
     GAME.with_borrow_mut(|game| game.replace(new_game));
@@ -51,8 +68,8 @@ fn main() -> anyhow::Result<()> {
 
     #[cfg(target_arch = "wasm32")]
     unsafe {
-        wasm::emscripten_set_main_loop(wasm::_update_wasm, 0, 1);
-    }
+        wasm::emscripten_set_main_loop(wasm::_update_wasm, 0, 1)
+    };
 
     Ok(())
 }
@@ -62,4 +79,8 @@ pub fn update() -> bool {
         Some(game) => game.update(),
         None => false,
     })
+}
+
+pub const fn calc_camera_zoom(width: i32, height: i32) -> f32 {
+    (width as f32 / 320.0).min(height as f32 / 180.0)
 }
