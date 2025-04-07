@@ -1,10 +1,21 @@
 use std::time::Duration;
 
 use alpacker::data::raylib::PackRaylibExt;
-use raylib::{math::Vector2, prelude::RaylibMode2DExt};
+use raylib::{
+    color::Color,
+    math::Vector2,
+    prelude::{RaylibDraw, RaylibMode2DExt},
+};
 
 use crate::{
-    dialog::{chains_level32::WHEAT_ENDING_CHAIN, handler::{DialogHandler, DialogUpdate, DREAM_PALLETE}}, player::{camera::PlayerCamera, Player}, sprite::simple::SimpleSprite, state::State, Game, Raylib
+    Game, Raylib,
+    dialog::{
+        chains_level32::WHEAT_ENDING_CHAIN,
+        handler::{DREAM_PALLETE, DialogHandler, DialogUpdate},
+    },
+    player::{Player, camera::PlayerCamera},
+    sprite::simple::SimpleSprite,
+    state::State,
 };
 
 use super::rules::Rules;
@@ -53,24 +64,32 @@ impl Level32 {
         self.camera.update(rl, self.player.pos);
 
         match self.dialog.update(controls, rl, delta) {
-            DialogUpdate::Visible => {},
+            DialogUpdate::Visible => {}
             DialogUpdate::Finished(choice) => match choice {
                 EndingChoice::Restart => return Some(State::Rules(Rules)),
-                EndingChoice::Finish => {},
+                EndingChoice::Finish => {}
             },
             DialogUpdate::Hidden => {
                 if !self.dialog_shown {
                     self.dialog.start_dialog(WHEAT_ENDING_CHAIN);
                     self.dialog_shown = true;
                 }
-            },
+            }
         };
 
         let mut d = rl.begin_drawing(&thread);
         let mut d2 = d.begin_mode2D(*self.camera);
 
+        d2.draw_rectangle(0, 0, 320, 180, Color::new(92, 139, 168, 255));
+        d2.draw_rectangle(
+            0,
+            180,
+            320,
+            d2.get_screen_height(),
+            Color::new(224, 107, 81, 255),
+        );
         for i in 0..=3 {
-            self.field.draw(&mut d2, Vector2::new(i as f32 * 128., 32.));
+            self.field.draw(&mut d2, Vector2::new(i as f32 * 128., 16.));
         }
 
         self.player.draw(&mut d2);

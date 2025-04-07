@@ -89,7 +89,7 @@ pub fn level2(game: &mut Game, quest_done: bool) -> Plot {
             awake: Box::new(State::Level22(Level22::new(game).unwrap())),
         }
     } else {
-        Plot::GoTo(Box::new(if rand::random_bool(1.0) {
+        Plot::GoTo(Box::new(if rand::random_bool(0.5) {
             State::Level21(Level21::new(game).unwrap())
         } else {
             State::Level22(Level22::new(game).unwrap())
@@ -103,7 +103,7 @@ pub fn level3_deep(game: &mut Game, quest_done: bool) -> Plot {
             deeper: Box::new(State::Level31(Level31::new())),
             awake: Box::new(State::Level32(Level32::new(game).unwrap())),
         }
-    } else if rand::random_bool(0.0) {
+    } else if rand::random_bool(0.5) {
         Plot::GoTo(Box::new(State::Level31(Level31::new())))
     } else {
         Plot::GoTo(Box::new(State::Level32(Level32::new(game).unwrap())))
