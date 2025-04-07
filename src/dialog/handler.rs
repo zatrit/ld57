@@ -64,6 +64,7 @@ impl<A: Action> DialogHandler<A> {
         });
     }
 
+    #[must_use]
     pub fn update(
         &mut self,
         controls: &Controls,

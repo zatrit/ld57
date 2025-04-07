@@ -61,7 +61,7 @@ impl Sprite {
         let Frame {
             mut rect, offset, ..
         } = self.current_loop()[self.current_frame];
-        rect.y -= self.strip_down;
+        rect.height -= self.strip_down;
         let rect = flip_rect(rect, self.flip_x, self.flip_y);
 
         draw.draw_texture_rec(&self.data.texture, rect, pos + offset, Color::WHITE);

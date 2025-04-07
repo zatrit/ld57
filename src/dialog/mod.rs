@@ -7,6 +7,7 @@ pub mod handler;
 pub mod chains_level22;
 pub mod chains_interlude;
 pub mod chains_level21;
+pub mod chains_level32;
 
 pub const NEXT: &str = "";
 

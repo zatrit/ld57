@@ -2,7 +2,7 @@ use raylib::{color::Color, prelude::RaylibDraw};
 
 use crate::{Game, Raylib, state::State};
 
-use super::level1::Level1;
+use super::{level1::Level1, rules::Rules};
 
 pub struct Level31 {
     radius: f32,
@@ -29,7 +29,7 @@ impl Level31 {
         let Raylib { rl, thread } = &mut game.raylib;
 
         if game.controls.interact.is_pressed(rl) {
-            return Some(State::Level1(Level1::new(game).unwrap()));
+            return Some(State::Rules(Rules));
         }
 
         let delta = rl.get_frame_time();
