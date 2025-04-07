@@ -4,7 +4,7 @@ use crate::{Game, Raylib, state::State};
 
 use super::level1::Level1;
 
-pub struct Level41 {
+pub struct Level31 {
     radius: f32,
     center_x: f32,
     center_y: f32,
@@ -14,7 +14,7 @@ pub struct Level41 {
 
 const SPEED: f32 = 2.;
 
-impl Level41 {
+impl Level31 {
     pub const fn new() -> Self {
         Self {
             radius: 10.,
@@ -28,7 +28,7 @@ impl Level41 {
     pub fn update(&mut self, game: &mut Game) -> Option<State> {
         let Raylib { rl, thread } = &mut game.raylib;
 
-        if game.controls.down.is_pressed(rl) {
+        if game.controls.interact.is_pressed(rl) {
             return Some(State::Level1(Level1::new(game).unwrap()));
         }
 

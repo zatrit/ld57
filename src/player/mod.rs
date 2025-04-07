@@ -81,12 +81,12 @@ impl Player {
             self.sprite.flip_x = dir.x < 0.;
         }
 
-        let moved = calc_move(
-            self.pos,
-            PIXELS_PER_SECOND * delta.as_secs_f32(),
-            dir,
-            walls,
-        );
+        let speed = PIXELS_PER_SECOND * delta.as_secs_f32();
+        let moved = if cfg!(feature = "extra-debug") && controls.interact.is_down(rl) {
+            dir * speed
+        } else {
+            calc_move(self.pos, speed, dir, walls)
+        };
 
         if moved.x != 0. || moved.y != 0. {
             self.sprite.play_tag(
@@ -115,6 +115,12 @@ fn calc_move(pos: Vector2, speed: f32, dir: Vector2, walls: &[Rectangle]) -> Vec
     let rect = Rectangle::new(pos.x, pos.y + y, PLAYER_SIZE.x, PLAYER_SIZE.y);
     if check_collision(rect, walls) {
         y = 0.;
+    }
+
+    let rect = Rectangle::new(pos.x + x, pos.y + y, PLAYER_SIZE.x, PLAYER_SIZE.y);
+    if check_collision(rect, walls) {
+        y = 0.;
+        x = 0.;
     }
 
     Vector2 { x, y }

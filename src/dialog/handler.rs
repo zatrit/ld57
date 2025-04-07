@@ -10,6 +10,21 @@ const FONT_SIZE: f32 = 8.;
 const PADDING: i32 = 4;
 const SPACING: i32 = 2;
 
+pub const DREAM_PALLETE: Pallete = Pallete {
+    light: Color::WHITE,
+    dark: Color::BLACK,
+};
+
+pub const REAL_PALLETE: Pallete = Pallete {
+    light: Color::new(255, 255, 224, 255),
+    dark: Color::new(61, 0, 61, 255),
+};
+
+pub struct Pallete {
+    light: Color,
+    dark: Color,
+}
+
 pub struct DisplayDialog<A: Action> {
     pub node: usize,
     pub chain: DialogChain<A>,
@@ -21,6 +36,7 @@ pub struct DisplayDialog<A: Action> {
 pub struct DialogHandler<A: Action> {
     pub font: WeakFont,
     pub dialog: Option<DisplayDialog<A>>,
+    pub pallete: Pallete,
 }
 
 pub enum DialogUpdate<A: Action> {
@@ -30,10 +46,11 @@ pub enum DialogUpdate<A: Action> {
 }
 
 impl<A: Action> DialogHandler<A> {
-    pub fn new(rl: &mut RaylibHandle) -> Self {
+    pub fn new(rl: &mut RaylibHandle, pallete: Pallete) -> Self {
         DialogHandler {
             font: rl.get_font_default(),
             dialog: None,
+            pallete,
         }
     }
 
@@ -137,9 +154,9 @@ impl<A: Action> DialogHandler<A> {
             win_y - 2,
             win_width + 4,
             win_height + 4,
-            Color::WHITE,
+            self.pallete.light,
         );
-        d.draw_rectangle(win_x, win_y, win_width, win_height, Color::BLACK);
+        d.draw_rectangle(win_x, win_y, win_width, win_height, self.pallete.dark);
 
         let dialog = match &self.dialog {
             Some(d) => d,
@@ -154,7 +171,7 @@ impl<A: Action> DialogHandler<A> {
             raylib::math::Vector2::new((win_x + PADDING) as f32, (win_y + PADDING) as f32),
             FONT_SIZE,
             SPACING as f32,
-            Color::WHITE,
+            self.pallete.light,
         );
 
         if dialog.current_letter >= node.text.chars().count() && !node.options.is_empty() {
@@ -172,7 +189,7 @@ impl<A: Action> DialogHandler<A> {
                     raylib::math::Vector2::new((win_x + PADDING) as f32, opt_y as f32),
                     FONT_SIZE,
                     SPACING as f32,
-                    Color::WHITE,
+                    self.pallete.light,
                 );
                 opt_y += FONT_SIZE as i32 + SPACING;
             }

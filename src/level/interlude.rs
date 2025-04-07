@@ -1,8 +1,8 @@
 use crate::{
     Game, Raylib,
     dialog::{
-        chains::INTERLUDE_CHAIN,
-        handler::{DialogHandler, DialogUpdate},
+        chains_interlude::INTERLUDE_CHAIN,
+        handler::{DREAM_PALLETE, DialogHandler, DialogUpdate},
     },
     player::camera::PlayerCamera,
     sprite::simple::SimpleSprite,
@@ -18,6 +18,7 @@ const BACKGROUND: Color = Color::new(61, 0, 61, 255);
 pub enum InterludeAction {
     Deeper,
     Awake,
+    None,
 }
 
 pub enum Plot {
@@ -45,17 +46,28 @@ pub struct Interlude {
     plot: Plot,
     camera: PlayerCamera,
     dest_color: Color,
+    target_dialog_shown: bool,
 }
 
 impl Interlude {
-    pub fn new(game: &mut Game, plot: Plot, dest_color: Color, timer: f32) -> anyhow::Result<Self> {
+    pub fn new(game: &mut Game, plot: Plot) -> anyhow::Result<Self> {
+        let dest_color = match &plot {
+            Plot::GoTo(plot) => plot.color(),
+            _ => Color::BLACK,
+        };
+        let timer = match &plot {
+            Plot::GoTo(plot) => plot.timer(),
+            _ => 10.,
+        };
+
         Ok(Self {
             sleeping: game.content.get(&mut game.raylib, "sleeping.png")?,
-            dialog: DialogHandler::new(&mut game.raylib.rl),
+            dialog: DialogHandler::new(&mut game.raylib.rl, DREAM_PALLETE),
             timer,
             plot,
-            camera: PlayerCamera::new(Vector2::one()),
+            camera: PlayerCamera::new(Vector2::new(0., 1.)),
             dest_color,
+            target_dialog_shown: false,
         })
     }
 
@@ -69,9 +81,11 @@ impl Interlude {
 
         self.camera.update(rl, Vector2::new(0., 90.));
 
-        if let Plot::Choice { .. } = &self.plot {
-            let delta = Duration::from_secs_f32(delta);
-            match self.dialog.update(controls, rl, delta) {
+        let delta = Duration::from_secs_f32(delta);
+        let dialog_update = self.dialog.update(controls, rl, delta);
+
+        match &self.plot {
+            Plot::Choice { .. } => match dialog_update {
                 DialogUpdate::Finished(action) => {
                     self.timer = 2.;
 
@@ -83,22 +97,32 @@ impl Interlude {
                     let choice = match action {
                         InterludeAction::Deeper => deeper,
                         InterludeAction::Awake => awake,
+                        _ => unreachable!(),
                     };
+
+                    self.dest_color = choice.color();
+                    self.timer = choice.timer();
 
                     self.plot = Plot::GoTo(choice);
                 }
                 DialogUpdate::Hidden => self.dialog.start_dialog(INTERLUDE_CHAIN),
                 _ => {}
+            },
+            Plot::GoTo(state) if !self.target_dialog_shown => match dialog_update {
+                DialogUpdate::Finished(_) => self.target_dialog_shown = true,
+                DialogUpdate::Hidden => self.dialog.start_dialog(state.interlude_dialog()),
+                _ => {}
+            },
+            _ => {
+                self.timer -= delta.as_secs_f32();
             }
-        } else {
-            self.timer -= delta;
         }
 
         let mut d = rl.begin_drawing(&thread);
         let mut d2 = d.begin_mode2D(*self.camera);
         self.draw(&mut d2);
 
-        if self.timer <= 0. && !self.plot.is_choice() {
+        if (cfg!(feature = "extra-debug") || self.timer <= 0.) && !self.plot.is_choice() {
             let plot = replace(&mut self.plot, Plot::None);
 
             Some(match plot {
@@ -111,7 +135,7 @@ impl Interlude {
     }
 
     pub fn draw(&self, d: &mut RaylibMode2D<RaylibDrawHandle>) {
-        d.clear_background(BACKGROUND.lerp(self.dest_color, 1. - self.timer / 2.));
+        d.clear_background(BACKGROUND.lerp(self.dest_color, 1. - self.timer));
 
         let sprite_w = self.sleeping.0.width;
         let sprite_h = self.sleeping.0.height;

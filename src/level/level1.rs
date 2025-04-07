@@ -10,13 +10,20 @@ use crate::{
     Game, Raylib,
     dialog::{
         DialogChain,
-        chains::{CARPET_CHAIN, FLOWERS_CHAIN, FRIDGE_CHAIN, GRASS_CHAIN},
-        handler::{DialogHandler, DialogUpdate},
+        chains_level1::{
+            BLUE_BED_CHAIN, CARPET_CHAIN, FLOWERS_CHAIN, FRIDGE_CHAIN, GRASS_CHAIN, RED_BED_CHAIN,
+        },
+        handler::{DREAM_PALLETE, DialogHandler, DialogUpdate},
     },
     interact::Interact,
     player::{Player, camera::PlayerCamera},
     sprite::simple::SimpleSprite,
-    state::State,
+    state::{State, level2},
+};
+
+use super::{
+    interlude::{Interlude, Plot},
+    level21::Level21,
 };
 
 const WALLS: &[Rectangle] = &[
@@ -73,12 +80,15 @@ pub const INTERACTS: [(Interact, DialogChain<InteractAction>); 6] = [
     (Interact::new(GRASS_PATCH_2, GRASS_PATCH_2), GRASS_CHAIN),
 ];
 
+const BED: Rectangle = Rectangle::new(161., 51., 14., 33.);
+pub const BED_INTERACT: Interact = Interact::new(BED, Rectangle::new(160., 50., 16., 24.));
+
 pub const BACKGROUND: Color = Color::new(65, 32, 81, 255);
 
 #[repr(u8)]
 #[derive(Debug, Default, Clone, Copy)]
 pub enum InteractAction {
-    TouchGrass,
+    Touch,
     Sleep,
     #[default]
     None,
@@ -96,6 +106,7 @@ pub struct Level1 {
 
     dialog: DialogHandler<InteractAction>,
     interacts: [(Interact, DialogChain<InteractAction>); 6],
+    bed_interact: Interact,
 
     touched_grass: bool,
     time: f64,
@@ -114,10 +125,12 @@ impl Level1 {
             outside: content.get::<SimpleSprite>(raylib, "outside.png")?,
             blue_bed: content.get::<SimpleSprite>(raylib, "blue_bed.png")?,
 
-            dialog: DialogHandler::new(&mut raylib.rl),
-            player: Player::new(game, Vector2::new(180., 72.))?,
-            camera: PlayerCamera::new(Vector2::new(0., 0.75)),
             interacts: INTERACTS,
+            bed_interact: BED_INTERACT,
+
+            dialog: DialogHandler::new(&mut raylib.rl, DREAM_PALLETE),
+            player: Player::new(game, Vector2::new(176., 56.))?,
+            camera: PlayerCamera::new(Vector2::new(0.75, 0.75)),
             touched_grass: false,
             time: 0.0,
         })
@@ -143,10 +156,21 @@ impl Level1 {
                         self.dialog.start_dialog(*dialog);
                     }
                 }
+
+                if self.bed_interact.update(&self.player.rect(), controls, rl) {
+                    self.dialog.start_dialog(if self.touched_grass {
+                        RED_BED_CHAIN
+                    } else {
+                        BLUE_BED_CHAIN
+                    });
+                }
             }
             DialogUpdate::Finished(action) => match action {
-                InteractAction::TouchGrass => self.touched_grass = true,
-                InteractAction::Sleep => todo!(),
+                InteractAction::Touch => self.touched_grass = true,
+                InteractAction::Sleep => {
+                    let plot = level2(game, self.touched_grass);
+                    return Some(State::Interlude(Interlude::new(game, plot).unwrap()));
+                }
                 InteractAction::None => {}
             },
         };
@@ -170,6 +194,7 @@ impl Level1 {
         for (interact, _) in &mut self.interacts {
             interact.draw(&mut d2);
         }
+        self.bed_interact.draw(&mut d2);
 
         self.player.draw(&mut d2);
 

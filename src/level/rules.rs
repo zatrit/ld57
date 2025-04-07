@@ -26,7 +26,6 @@ const RULES: &[&str] = &[
     "Press E or Z to continue...",
 ];
 
-
 impl Rules {
     pub fn update(&self, game: &mut Game) -> Option<State> {
         let Raylib { rl, thread } = &mut game.raylib;
@@ -41,9 +40,7 @@ impl Rules {
 
         if game.controls.interact.is_pressed(rl) {
             let plot = Plot::GoTo(Box::new(State::Level1(Level1::new(game).unwrap())));
-            return Some(State::Interlude(
-                Interlude::new(game, plot, level1::BACKGROUND, 4.).unwrap(),
-            ));
+            return Some(State::Interlude(Interlude::new(game, plot).unwrap()));
         }
 
         None

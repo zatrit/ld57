@@ -21,6 +21,7 @@ impl Interact {
         }
     }
 
+    #[must_use]
     pub fn update(
         &mut self,
         player: &Rectangle,

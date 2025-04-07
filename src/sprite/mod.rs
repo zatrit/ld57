@@ -20,6 +20,8 @@ pub struct Sprite {
     pub flip_x: bool,
     pub flip_y: bool,
 
+    pub strip_down: f32,
+
     timer: Duration,
 }
 
@@ -35,6 +37,7 @@ impl Sprite {
             flip_x: false,
             flip_y: false,
             timer: Duration::ZERO,
+            strip_down: 0.,
         }
     }
 
@@ -55,7 +58,10 @@ impl Sprite {
     }
 
     pub fn draw(&self, draw: &mut impl RaylibDraw, pos: Vector2) {
-        let Frame { rect, offset, .. } = self.current_loop()[self.current_frame];
+        let Frame {
+            mut rect, offset, ..
+        } = self.current_loop()[self.current_frame];
+        rect.y -= self.strip_down;
         let rect = flip_rect(rect, self.flip_x, self.flip_y);
 
         draw.draw_texture_rec(&self.data.texture, rect, pos + offset, Color::WHITE);

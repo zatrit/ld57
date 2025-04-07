@@ -24,8 +24,8 @@ impl PlayerCamera {
         let (width, height) = (rl.get_screen_width(), rl.get_screen_height());
 
         self.zoom = calc_camera_zoom(width, height);
-        self.target = player * self.player_pos_mult;
-        self.offset.y = 90. * self.zoom;
+        self.target = player;
+        self.offset = Vector2::new(160., 90.) * self.zoom * self.player_pos_mult;
     }
 
     pub fn screen_rect(&self, width: i32, height: i32) -> Rectangle {
