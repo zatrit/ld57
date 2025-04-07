@@ -3,28 +3,26 @@ use std::{cell::RefCell, io};
 use alpacker::{Pack, pack::TarZstPack};
 use anyhow::Ok;
 use controls::Controls;
-use level::level4::Level4;
-use raylib::{
-    RaylibHandle, RaylibThread,
-};
+use level::rules::Rules;
+use raylib::{RaylibHandle, RaylibThread};
 use state::State;
 
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 mod controls;
+mod dialog;
+mod interact;
 mod level;
 mod player;
 mod sprite;
 mod state;
-mod dialog;
-mod interact;
 
 const CONTENT: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/content.tar.zst"));
 
 thread_local! {
     static GAME: RefCell<Option<Game>> = RefCell::new(None);
-    static STATE: RefCell<State> = RefCell::new(State::Level4(Level4::new()));
+    static STATE: RefCell<State> = RefCell::new(State::Rules(Rules));
 }
 
 pub struct Raylib {
@@ -54,6 +52,7 @@ fn main() -> anyhow::Result<()> {
         .vsync()
         .build();
     raylib.set_exit_key(None);
+    raylib.set_target_fps(60);
 
     let new_game = Game {
         raylib: Raylib { rl: raylib, thread },

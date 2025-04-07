@@ -1,8 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
-use raylib::{camera::Camera2D, math::Vector2, prelude::Rectangle, RaylibHandle};
-
-use super::Player;
+use raylib::{RaylibHandle, camera::Camera2D, math::Vector2, prelude::Rectangle};
 
 #[derive(Debug)]
 pub struct PlayerCamera {
@@ -22,11 +20,11 @@ impl PlayerCamera {
         }
     }
 
-    pub fn update(&mut self, rl: &mut RaylibHandle, player: &Player) {
+    pub fn update(&mut self, rl: &mut RaylibHandle, player: Vector2) {
         let (width, height) = (rl.get_screen_width(), rl.get_screen_height());
 
         self.zoom = calc_camera_zoom(width, height);
-        self.target = player.pos * self.player_pos_mult;
+        self.target = player * self.player_pos_mult;
         self.offset.y = 90. * self.zoom;
     }
 

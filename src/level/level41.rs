@@ -4,7 +4,7 @@ use crate::{Game, Raylib, state::State};
 
 use super::level1::Level1;
 
-pub struct Level4 {
+pub struct Level41 {
     radius: f32,
     center_x: f32,
     center_y: f32,
@@ -14,7 +14,7 @@ pub struct Level4 {
 
 const SPEED: f32 = 2.;
 
-impl Level4 {
+impl Level41 {
     pub const fn new() -> Self {
         Self {
             radius: 10.,

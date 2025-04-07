@@ -1,11 +1,13 @@
 use crate::{
     Game,
-    level::{level1::Level1, level4::Level4},
+    level::{interlude::Interlude, level1::Level1, level41::Level41, rules::Rules},
 };
 
 pub enum State {
+    Rules(Rules),
+    Interlude(Interlude),
     Level1(Level1),
-    Level4(Level4),
+    Level4(Level41),
 }
 
 impl State {
@@ -13,6 +15,8 @@ impl State {
         let should_close = game.raylib.rl.window_should_close();
 
         let new_state = match self {
+            State::Interlude(interlude) => interlude.update(game),
+            State::Rules(rules) => rules.update(game),
             State::Level1(lvl) => lvl.update(game),
             State::Level4(lvl) => lvl.update(game),
         };

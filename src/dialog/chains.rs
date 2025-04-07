@@ -1,6 +1,6 @@
-use crate::level::level1::InteractAction;
+use crate::level::{interlude::InterludeAction, level1::InteractAction};
 
-use super::{DialogAction, DialogChain, DialogNode, NEXT, finish, next};
+use super::{DialogAction, DialogChain, DialogNode, DialogOption, NEXT, finish, next};
 
 // Vibe coded some dialog messages, because it's faster to use ChatGPT for this
 
@@ -143,4 +143,25 @@ pub const FLOWERS_CHAIN: DialogChain<InteractAction> = DialogChain {
         text: "You REALLY don't want to step on these flowers.",
         options: &[finish(InteractAction::None)],
     }],
+};
+
+pub const INTERLUDE_CHAIN: DialogChain<InterludeAction> = DialogChain {
+    start: 0,
+    nodes: &[
+        // Node 0
+        DialogNode {
+            text: "You are in a deep slumber. What will you do?",
+            options: &[next("Go deeper", 1), next("Awake a bit", 2)],
+        },
+        // Node 1 (Go deeper)
+        DialogNode {
+            text: "You drift deeper into your sleep, the world fading away.",
+            options: &[finish(InterludeAction::Deeper)],
+        },
+        // Node 2 (Awake a bit)
+        DialogNode {
+            text: "You stir awake slightly, feeling pull of consciousness.",
+            options: &[finish(InterludeAction::Awake)],
+        },
+    ],
 };

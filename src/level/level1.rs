@@ -7,9 +7,16 @@ use raylib::{
 use std::{f64::consts::PI, time::Duration};
 
 use crate::{
+    Game, Raylib,
     dialog::{
-        chains::{CARPET_CHAIN, FLOWERS_CHAIN, FRIDGE_CHAIN, GRASS_CHAIN}, handler::{DialogHandler, DialogUpdate}, DialogAction, DialogChain
-    }, interact::Interact, player::{camera::PlayerCamera, Player}, sprite::simple::SimpleSprite, state::State, Game, Raylib
+        DialogChain,
+        chains::{CARPET_CHAIN, FLOWERS_CHAIN, FRIDGE_CHAIN, GRASS_CHAIN},
+        handler::{DialogHandler, DialogUpdate},
+    },
+    interact::Interact,
+    player::{Player, camera::PlayerCamera},
+    sprite::simple::SimpleSprite,
+    state::State,
 };
 
 const WALLS: &[Rectangle] = &[
@@ -32,14 +39,17 @@ const WALLS: &[Rectangle] = &[
     Rectangle::new(78., 237., 163., 1.),
 ];
 
+// Carpet
 const CARPET: Rectangle = Rectangle::new(161., 96., 62., 47.);
-
+// Flowers
 const FLOWER_BED_1: Rectangle = Rectangle::new(93., 158., 66., 16.);
 const FLOWER_BED_2: Rectangle = Rectangle::new(177., 158., 51., 16.);
+// Grass
 const GRASS_PATCH_1: Rectangle = Rectangle::new(80., 193., 80., 47.);
 const GRASS_PATCH_2: Rectangle = Rectangle::new(176., 193., 64., 47.);
 
 pub const INTERACTS: [(Interact, DialogChain<InteractAction>); 6] = [
+    // Fridge
     (
         Interact::new(
             Rectangle::new(96., 83., 16., 27.),
@@ -47,14 +57,23 @@ pub const INTERACTS: [(Interact, DialogChain<InteractAction>); 6] = [
         ),
         FRIDGE_CHAIN,
     ),
+    // Capret
     (Interact::new(CARPET, CARPET), CARPET_CHAIN),
-    (Interact::new(FLOWER_BED_1, FLOWER_BED_1), FLOWERS_CHAIN),
-    (Interact::new(FLOWER_BED_2, FLOWER_BED_2), FLOWERS_CHAIN),
+    // Flowers)
+    (
+        Interact::new(FLOWER_BED_1, Rectangle::new(93., 158., 66., 8.)),
+        FLOWERS_CHAIN,
+    ),
+    (
+        Interact::new(FLOWER_BED_2, Rectangle::new(177., 158., 51., 8.)),
+        FLOWERS_CHAIN,
+    ),
+    // Grass
     (Interact::new(GRASS_PATCH_1, GRASS_PATCH_1), GRASS_CHAIN),
     (Interact::new(GRASS_PATCH_2, GRASS_PATCH_2), GRASS_CHAIN),
 ];
 
-const BACKGROUND: Color = Color::new(65, 32, 81, 255);
+pub const BACKGROUND: Color = Color::new(65, 32, 81, 255);
 
 #[repr(u8)]
 #[derive(Debug, Default, Clone, Copy)]
@@ -132,7 +151,7 @@ impl Level1 {
             },
         };
 
-        self.camera.update(rl, &self.player);
+        self.camera.update(rl, self.player.pos);
 
         let mut d = rl.begin_drawing(thread);
 
