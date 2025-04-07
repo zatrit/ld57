@@ -21,10 +21,7 @@ use crate::{
     state::{State, level2},
 };
 
-use super::{
-    interlude::{Interlude, Plot},
-    level21::Level21,
-};
+use super::interlude::Interlude;
 
 const WALLS: &[Rectangle] = &[
     // Front side

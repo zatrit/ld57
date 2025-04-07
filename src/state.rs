@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+
+use rand::{Rng, rngs::ThreadRng};
 use raylib::color::Color;
 
 use crate::{
@@ -16,6 +19,14 @@ use crate::{
         rules::Rules,
     },
 };
+
+thread_local! {
+    pub static RNG: RefCell<ThreadRng> = RefCell::new({
+        let mut rng =rand::rng();
+        rng.reseed().unwrap();
+        rng
+    });
+}
 
 pub enum State {
     Rules(Rules),
@@ -103,7 +114,7 @@ pub fn level3_deep(game: &mut Game, quest_done: bool) -> Plot {
             deeper: Box::new(State::Level31(Level31::new())),
             awake: Box::new(State::Level32(Level32::new(game).unwrap())),
         }
-    } else if rand::random_bool(0.5) {
+    } else if RNG.with_borrow_mut(|rng| rng.random_bool(0.5)) {
         Plot::GoTo(Box::new(State::Level31(Level31::new())))
     } else {
         Plot::GoTo(Box::new(State::Level32(Level32::new(game).unwrap())))
@@ -116,7 +127,7 @@ pub fn level3_awake(game: &mut Game, quest_done: bool) -> Plot {
             deeper: todo!(),
             awake: todo!(),
         }
-    } else if rand::random_bool(0.5) {
+    } else if RNG.with_borrow_mut(|rng| rng.random_bool(0.5)) {
         todo!()
     } else {
         todo!()

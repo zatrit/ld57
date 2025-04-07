@@ -4,6 +4,7 @@ use alpacker::{Pack, pack::TarZstPack};
 use anyhow::Ok;
 use controls::Controls;
 use level::rules::Rules;
+use rand::{RngCore, rng};
 use raylib::{RaylibHandle, RaylibThread};
 use state::State;
 
@@ -43,6 +44,10 @@ impl Game {
 }
 
 fn main() -> anyhow::Result<()> {
+    for _ in 0..100 {
+        eprintln!("{}", rand::random_bool(0.5));
+    }
+
     let content = TarZstPack::load(io::Cursor::new(CONTENT))?;
 
     let (mut raylib, thread) = raylib::init()

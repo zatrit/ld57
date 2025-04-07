@@ -18,7 +18,7 @@ use crate::{
         handler::{DialogHandler, DialogUpdate, REAL_PALLETE},
     },
     interact::Interact,
-    player::{Player, camera::PlayerCamera},
+    player::{self, Player, camera::PlayerCamera},
     sprite::simple::SimpleSprite,
     state::{State, level3_awake},
 };
@@ -166,7 +166,12 @@ const WALLS: &[Rectangle] = &[
     Rectangle::new(63.0, 429.0, 49.0, 1.0),
 ];
 
-const STAIRCASES: &[(Rectangle, Rectangle)] = &[];
+const STAIRCASES: &[Rectangle] = &[
+    Rectangle::new(160.0, 124.0, 16.0, 1.0),
+    Rectangle::new(192.0, 172.0, 16.0, 1.0),
+    Rectangle::new(48.0, 236.0, 32.0, 1.0),
+    Rectangle::new(96.0, 364.0, 16.0, 1.0),
+];
 
 #[derive(Debug, Clone, Copy)]
 pub enum InteractAction {
@@ -240,6 +245,17 @@ impl Level22 {
                 };
             }
         };
+
+        let player_rect = self.player.rect();
+        for staircase in STAIRCASES {
+            let bottom = Rectangle {
+                y: staircase.y + 23.,
+                ..*staircase
+            };
+            if bottom.check_collision_recs(&player_rect) && !self.walls.contains(staircase) {
+                self.walls.push(*staircase);
+            }
+        }
 
         self.camera.update(rl, self.player.pos);
 

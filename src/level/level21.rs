@@ -305,14 +305,19 @@ impl Level21 {
                     let cell_x = x * CELL_WIDTH;
                     // Slight adjustment on Y for visual alignment
                     let cell_y = y * CELL_HEIGHT + 2;
-                    let wall_color = Color::WHITE;
-                    if !field.has_passage(&Direction::North) {
+                    let wall_color =
+                        Color::WHITE.lerp(Color::RED, (self.maze_timer.as_secs_f32() - 10.) / 5.);
+
+                    let alert = wall_color == Color::RED;
+
+                    if alert || !field.has_passage(&Direction::North) {
                         d.draw_line(cell_x, cell_y, cell_x + CELL_WIDTH, cell_y, wall_color);
                     }
-                    if !field.has_passage(&Direction::West) {
+                    if alert || !field.has_passage(&Direction::West) {
                         d.draw_line(cell_x, cell_y, cell_x, cell_y + CELL_HEIGHT, wall_color);
                     }
-                    if !field.has_passage(&Direction::South) {
+
+                    if alert || !field.has_passage(&Direction::South) {
                         d.draw_line(
                             cell_x,
                             cell_y + CELL_HEIGHT,
@@ -321,7 +326,8 @@ impl Level21 {
                             wall_color,
                         );
                     }
-                    if !field.has_passage(&Direction::East) {
+
+                    if alert || !field.has_passage(&Direction::East) {
                         d.draw_line(
                             cell_x + CELL_WIDTH,
                             cell_y,
