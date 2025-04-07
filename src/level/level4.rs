@@ -1,8 +1,8 @@
 use raylib::{color::Color, prelude::RaylibDraw};
 
-use crate::{Game, Raylib, STATE, state::State};
+use crate::{Game, Raylib, state::State};
 
-use super::{level1::Level1, test::TestLevel};
+use super::level1::Level1;
 
 pub struct Level4 {
     radius: f32,
@@ -28,7 +28,7 @@ impl Level4 {
     pub fn update(&mut self, game: &mut Game) -> Option<State> {
         let Raylib { rl, thread } = &mut game.raylib;
 
-        if game.controls.down.is_down(rl) {
+        if game.controls.down.is_pressed(rl) {
             return Some(State::Level1(Level1::new(game).unwrap()));
         }
 

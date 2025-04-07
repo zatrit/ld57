@@ -29,7 +29,7 @@ impl Sprite {
             current_frame: 0,
             current_loop: match tag {
                 Some(tag) => data.tags[tag],
-                None => FrameTag::from_start(data.frames.len()),
+                None => FrameTag::from_start(data.frames.len() - 1),
             },
             data,
             flip_x: false,
@@ -47,18 +47,18 @@ impl Sprite {
 
     fn current_loop(&self) -> &[Frame] {
         let FrameTag { from, to } = self.current_loop;
-        &self.data.frames[from..to]
+        &self.data.frames[from..=to]
     }
 
     fn current_frame(&self) -> &Frame {
         &self.current_loop()[self.current_frame]
     }
 
-    pub fn draw(&self, draw: &mut impl RaylibDraw, position: Vector2) {
+    pub fn draw(&self, draw: &mut impl RaylibDraw, pos: Vector2) {
         let Frame { rect, offset, .. } = self.current_loop()[self.current_frame];
         let rect = flip_rect(rect, self.flip_x, self.flip_y);
 
-        draw.draw_texture_rec(&self.data.texture, rect, position + offset, Color::WHITE);
+        draw.draw_texture_rec(&self.data.texture, rect, pos + offset, Color::WHITE);
     }
 
     pub fn update(&mut self, delta: Duration) {
@@ -71,21 +71,26 @@ impl Sprite {
         }
     }
 
-    pub fn play_tag(&mut self, tag: Option<&str>, frame: usize) {
+    pub fn play_tag(&mut self, tag: Option<&str>, frame: Option<usize>) {
+        let old_loop = self.current_loop;
+
         let tag = self.tag(tag);
         self.current_loop = tag;
-        self.current_frame = frame % self.current_loop().len();
+
+        if let Some(frame) = frame {
+            self.current_frame = frame % self.current_loop().len();
+        } else if tag != old_loop {
+            self.current_frame = 0;
+        }
     }
 }
 
 const fn flip_rect(mut rect: Rectangle, flip_x: bool, flip_y: bool) -> Rectangle {
     if flip_x {
-        rect.x += rect.width;
         rect.width = -rect.width;
     }
 
     if flip_y {
-        rect.y += rect.height;
         rect.height = -rect.height;
     }
 

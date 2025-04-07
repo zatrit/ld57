@@ -6,8 +6,6 @@ use controls::Controls;
 use level::level4::Level4;
 use raylib::{
     RaylibHandle, RaylibThread,
-    camera::{Camera, Camera2D},
-    math::Vector2,
 };
 use state::State;
 
@@ -68,7 +66,7 @@ fn main() -> anyhow::Result<()> {
 
     #[cfg(target_arch = "wasm32")]
     unsafe {
-        wasm::emscripten_set_main_loop(wasm::_update_wasm, 0, 1)
+        wasm::emscripten_set_main_loop(wasm::_update_wasm, 60, 1)
     };
 
     Ok(())

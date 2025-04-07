@@ -10,7 +10,9 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 macro_rules! key_check {
     ($func:ident, $check:ident) => {
         pub fn $func(&self, raylib: &mut RaylibHandle) -> bool {
-            self.0.is_some_and(|k| raylib.$check(k)) || self.1.is_some_and(|k| raylib.$check(k))
+            let res = self.0.is_some_and(|k| raylib.$check(k)) || self.1.is_some_and(|k| raylib.$check(k));
+            eprintln!("{res:?}");
+            res
         }
     };
 }

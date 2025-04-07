@@ -6,7 +6,6 @@ use alpacker::{
 };
 use aseprite::SpritesheetData;
 use raylib::{
-    RaylibHandle, RaylibThread,
     math::{Rectangle, Vector2},
     texture::{Image, Texture2D},
 };
@@ -27,7 +26,7 @@ pub struct Frame {
     pub offset: Vector2,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct FrameTag {
     pub from: usize,
     pub to: usize,
