@@ -50,7 +50,7 @@ impl<'r> RaylibAsset<'r> for SpriteData {
         let AlpackerSprite { image, meta } = pack.get::<AlpackerSprite<Image>>(path)?;
         let image = image.unwrap();
 
-        let texture = rl.load_texture_from_image(&thread, &image)?;
+        let texture = rl.load_texture_from_image(thread, &image)?;
 
         let SpritesheetData { frames, meta } = meta;
 

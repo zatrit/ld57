@@ -7,7 +7,9 @@ use crate::{
     Game,
     dialog::{
         DialogChain,
-        chains_interlude::{HOME_CHAIN, MAZE_CHAIN, SKY_ISLES_CHAIN, TOO_DEEP_CHAIN, WHEAT_CHAIN},
+        chains_interlude::{
+            HOME_CHAIN, MAZE_CHAIN, SKY_ISLES_CHAIN, TOO_DEEP_CHAIN, WAKEUP_CHAIN, WHEAT_CHAIN,
+        },
     },
     level::{
         interlude::{Interlude, InterludeAction, Plot},
@@ -16,6 +18,7 @@ use crate::{
         level22::{self, Level22},
         level31::Level31,
         level32::Level32,
+        level33::Level33,
         rules::Rules,
     },
 };
@@ -36,6 +39,7 @@ pub enum State {
     Level22(Level22),
     Level31(Level31),
     Level32(Level32),
+    Level33(Level33),
 }
 
 impl State {
@@ -51,6 +55,7 @@ impl State {
             Level22(lvl) => lvl.update(game),
             Level31(lvl) => lvl.update(game),
             Level32(lvl) => lvl.update(game),
+            Level33(lvl) => lvl.update(game),
         };
 
         if let Some(state) = new_state {
@@ -67,6 +72,7 @@ impl State {
             Level22(_) => level22::BACKGROUND,
             Level31(_) => Color::BLUE,
             Level32(_) => Color::new(242, 165, 97, 255),
+            Level33(_) => Color::new(92, 72, 106, 255),
             _ => Color::BLACK,
         }
     }
@@ -78,6 +84,7 @@ impl State {
             Level22(_) => SKY_ISLES_CHAIN,
             Level31(_) => TOO_DEEP_CHAIN,
             Level32(_) => WHEAT_CHAIN,
+            Level33(_) => WAKEUP_CHAIN,
             _ => MAZE_CHAIN,
         }
     }
@@ -87,7 +94,7 @@ impl State {
         match self {
             Level1(_) => 3.,
             Level21(_) | Level22(_) => 2.,
-            Level31(_) | Level32(_) => 1.,
+            Level31(_) | Level32(_) | Level33(_) => 1.,
             _ => 0.,
         }
     }
@@ -124,12 +131,12 @@ pub fn level3_deep(game: &mut Game, quest_done: bool) -> Plot {
 pub fn level3_awake(game: &mut Game, quest_done: bool) -> Plot {
     if quest_done {
         Plot::Choice {
-            deeper: todo!(),
-            awake: todo!(),
+            deeper: Box::new(State::Level32(Level32::new(game).unwrap())),
+            awake: Box::new(State::Level33(Level33::new(game).unwrap())),
         }
     } else if RNG.with_borrow_mut(|rng| rng.random_bool(0.5)) {
-        todo!()
+        Plot::GoTo(Box::new(State::Level32(Level32::new(game).unwrap())))
     } else {
-        todo!()
+        Plot::GoTo(Box::new(State::Level33(Level33::new(game).unwrap())))
     }
 }

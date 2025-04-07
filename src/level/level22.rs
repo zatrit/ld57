@@ -18,7 +18,7 @@ use crate::{
         handler::{DialogHandler, DialogUpdate, REAL_PALLETE},
     },
     interact::Interact,
-    player::{self, Player, camera::PlayerCamera},
+    player::{Player, camera::PlayerCamera},
     sprite::simple::SimpleSprite,
     state::{State, level3_awake},
 };

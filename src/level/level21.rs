@@ -306,9 +306,9 @@ impl Level21 {
                     // Slight adjustment on Y for visual alignment
                     let cell_y = y * CELL_HEIGHT + 2;
                     let wall_color =
-                        Color::WHITE.lerp(Color::RED, (self.maze_timer.as_secs_f32() - 10.) / 5.);
+                        Color::WHITE.lerp(Color::GREEN, (self.maze_timer.as_secs_f32() - 10.) / 5.);
 
-                    let alert = wall_color == Color::RED;
+                    let alert = wall_color == Color::GREEN;
 
                     if alert || !field.has_passage(&Direction::North) {
                         d.draw_line(cell_x, cell_y, cell_x + CELL_WIDTH, cell_y, wall_color);

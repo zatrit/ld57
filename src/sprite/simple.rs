@@ -2,7 +2,7 @@ use std::path::Path;
 
 use alpacker::{
     Pack,
-    data::raylib::{RaylibAsset, RaylibError},
+    data::raylib::RaylibAsset,
 };
 use raylib::{
     color::Color, math::Vector2, prelude::RaylibDraw, texture::{Image, Texture2D}
@@ -23,7 +23,7 @@ impl<'r> RaylibAsset<'r> for SimpleSprite {
         path: impl AsRef<Path>,
     ) -> Result<Self, Self::Error> {
         let image = pack.get::<Image>(path)?;
-        let texture = rl.load_texture_from_image(&thread, &image)?;
+        let texture = rl.load_texture_from_image(thread, &image)?;
         Ok(Self(texture))
     }
 }

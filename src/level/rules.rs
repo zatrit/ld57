@@ -6,8 +6,7 @@ use raylib::{
 use crate::{Game, Raylib, state::State};
 
 use super::{
-    interlude::{Interlude, Plot},
-    level1::{self, Level1},
+    draw_line, interlude::{Interlude, Plot}, level1::Level1
 };
 
 pub struct Rules;
@@ -29,11 +28,11 @@ const RULES: &[&str] = &[
 impl Rules {
     pub fn update(&self, game: &mut Game) -> Option<State> {
         let Raylib { rl, thread } = &mut game.raylib;
-        let mut d = rl.begin_drawing(&thread);
+        let mut d = rl.begin_drawing(thread);
 
         d.clear_background(Color::BLACK);
         for (i, line) in RULES.iter().enumerate() {
-            self.draw_line(&mut d, 100 + i as i32 * (FONT_SIZE + 2), line);
+            draw_line(&mut d, 100 + i as i32 * (FONT_SIZE + 2), line, Color::WHITE);
         }
 
         drop(d);
@@ -44,12 +43,5 @@ impl Rules {
         }
 
         None
-    }
-
-    pub fn draw_line(&self, d: &mut RaylibDrawHandle, y: i32, line: &str) {
-        let width = d.measure_text(line, FONT_SIZE);
-        let x = (d.get_screen_width() - width) / 2;
-
-        d.draw_text(line, x, y, FONT_SIZE, Color::WHITE);
     }
 }

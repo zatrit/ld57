@@ -1,0 +1,27 @@
+========
+CREDITS
+========
+
+Code: Zatrit156 & ChatGPT
+
+Artwork: Zatrit156 & ChatGPT
+
+Level Design: Zatrit156
+
+Sound (if present): Zatrit156
+
+Idea: Zatrit156 & Breadskiy 
+& Almassko
+
+Testing: Breadskiy & Almassko 
+& VoronAbobus
+
+Also thanks for the moral support
+to all of my family and friends.
+
+And thank you, player, 
+for playing our little project! <3
+
+I'm sorry that the first release is 
+so raw, but I'm glad we were able to 
+get it to a working state!

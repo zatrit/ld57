@@ -146,7 +146,7 @@ impl Level1 {
         match self.dialog.update(controls, rl, delta) {
             DialogUpdate::Visible => {}
             DialogUpdate::Hidden => {
-                self.player.update(rl, delta, controls, &WALLS);
+                self.player.update(rl, delta, controls, WALLS);
 
                 for (interact, dialog) in &mut self.interacts {
                     if interact.update(&self.player.rect(), controls, rl) {

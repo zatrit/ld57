@@ -1,6 +1,6 @@
-use crate::level::{interlude::InterludeAction, level1::InteractAction};
+use crate::level::level1::InteractAction;
 
-use super::{DialogAction, DialogChain, DialogNode, DialogOption, NEXT, finish, next};
+use super::{DialogChain, DialogNode, NEXT, finish, next};
 
 // Vibe coded some dialog messages, because it's faster to use ChatGPT for this
 

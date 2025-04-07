@@ -93,16 +93,12 @@ impl<A: Action> DialogHandler<A> {
         }
 
         if !node.options.is_empty() {
-            if controls.up.is_pressed(rl) {
-                if dialog.current_selection > 0 {
-                    dialog.current_selection -= 1;
-                }
+            if controls.up.is_pressed(rl) && dialog.current_selection > 0 {
+                dialog.current_selection -= 1;
             }
 
-            if controls.down.is_pressed(rl) {
-                if dialog.current_selection + 1 < node.options.len() {
-                    dialog.current_selection += 1;
-                }
+            if controls.down.is_pressed(rl) && dialog.current_selection + 1 < node.options.len() {
+                dialog.current_selection += 1;
             }
 
             if controls.interact.is_pressed(rl) {
@@ -120,20 +116,18 @@ impl<A: Action> DialogHandler<A> {
                     }
                 }
             }
-        } else {
-            if controls.interact.is_pressed(rl) {
-                let ret = match node.options.first() {
-                    Some(opt) => match opt.action {
-                        DialogAction::Finish(val) => val,
-                        _ => panic!("Expected Finish action in terminal node"),
-                    },
-                    None => {
-                        panic!("Terminal node without option not allowed")
-                    }
-                };
-                self.dialog = None;
-                return DialogUpdate::Finished(ret);
-            }
+        } else if controls.interact.is_pressed(rl) {
+            let ret = match node.options.first() {
+                Some(opt) => match opt.action {
+                    DialogAction::Finish(val) => val,
+                    _ => panic!("Expected Finish action in terminal node"),
+                },
+                None => {
+                    panic!("Terminal node without option not allowed")
+                }
+            };
+            self.dialog = None;
+            return DialogUpdate::Finished(ret);
         }
 
         DialogUpdate::Visible

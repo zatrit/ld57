@@ -2,7 +2,7 @@ use raylib::{color::Color, prelude::RaylibDraw};
 
 use crate::{Game, Raylib, state::State};
 
-use super::{level1::Level1, rules::Rules};
+use super::rules::Rules;
 
 pub struct Level31 {
     radius: f32,
@@ -51,7 +51,7 @@ impl Level31 {
             self.speed_y = -SPEED;
         }
 
-        let mut d = rl.begin_drawing(&thread);
+        let mut d = rl.begin_drawing(thread);
         d.clear_background(Color::BLACK);
         d.draw_circle(
             self.center_x as i32,

@@ -18,7 +18,7 @@ use crate::{
     state::State,
 };
 
-use super::rules::Rules;
+use super::{FONT_SIZE, rules::Rules};
 
 #[derive(Debug, Clone, Copy)]
 pub enum EndingChoice {
@@ -28,12 +28,15 @@ pub enum EndingChoice {
 
 pub struct Level32 {
     field: SimpleSprite,
+    credits: Vec<String>,
 
     player: Player,
     camera: PlayerCamera,
 
     dialog: DialogHandler<EndingChoice>,
     dialog_shown: bool,
+
+    timer: f64,
 }
 
 impl Level32 {
@@ -47,10 +50,15 @@ impl Level32 {
 
         Ok(Self {
             player,
+            credits: alpacker::Pack::get::<String>(content, "credits.txt")?
+                .split("\n")
+                .map(str::to_string)
+                .collect(),
             field: content.get::<SimpleSprite>(raylib, "field.png")?,
             camera: PlayerCamera::new(Vector2::one()),
             dialog: DialogHandler::new(&mut raylib.rl, DREAM_PALLETE),
             dialog_shown: false,
+            timer: 0.,
         })
     }
 
@@ -73,11 +81,13 @@ impl Level32 {
                 if !self.dialog_shown {
                     self.dialog.start_dialog(WHEAT_ENDING_CHAIN);
                     self.dialog_shown = true;
+                } else {
+                    self.timer += delta.as_secs_f64();
                 }
             }
         };
 
-        let mut d = rl.begin_drawing(&thread);
+        let mut d = rl.begin_drawing(thread);
         let mut d2 = d.begin_mode2D(*self.camera);
 
         d2.draw_rectangle(0, 0, 320, 180, Color::new(92, 139, 168, 255));
@@ -94,11 +104,20 @@ impl Level32 {
 
         self.player.draw(&mut d2);
 
-        self.dialog.draw(
-            self.camera
-                .screen_rect(d2.get_screen_width(), d2.get_screen_height()),
-            &mut d2,
-        );
+        let screen_rect = self
+            .camera
+            .screen_rect(d2.get_screen_width(), d2.get_screen_height());
+
+        self.dialog.draw(screen_rect, &mut d2);
+
+        for (i, line) in self.credits.iter().enumerate() {
+            let y =
+                screen_rect.height as i32 - (10. * self.timer) as i32 + i as i32 * (FONT_SIZE + 2);
+            let width = d2.measure_text(line, FONT_SIZE);
+            let x = (screen_rect.width as i32 - width) / 2;
+
+            d2.draw_text(line, x, y, FONT_SIZE, Color::BLACK);
+        }
 
         None
     }

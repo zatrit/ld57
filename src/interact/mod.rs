@@ -28,7 +28,7 @@ impl Interact {
         controls: &Controls,
         rl: &mut RaylibHandle,
     ) -> bool {
-        self.touching = self.interact_rect.check_collision_recs(&player);
+        self.touching = self.interact_rect.check_collision_recs(player);
         self.touching && controls.interact.is_pressed(rl)
     }
 

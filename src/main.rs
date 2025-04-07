@@ -1,11 +1,13 @@
 use std::{cell::RefCell, io};
 
-use alpacker::{Pack, pack::TarZstPack};
+use alpacker::{Pack, data::raylib::PackRaylibExt, pack::TarZstPack};
 use anyhow::Ok;
 use controls::Controls;
 use level::rules::Rules;
-use rand::{RngCore, rng};
-use raylib::{RaylibHandle, RaylibThread};
+use raylib::{
+    RaylibHandle, RaylibThread,
+    audio::{Music, RaylibAudio, Wave},
+};
 use state::State;
 
 #[cfg(target_arch = "wasm32")]
@@ -22,8 +24,8 @@ mod state;
 const CONTENT: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/content.tar.zst"));
 
 thread_local! {
-    static GAME: RefCell<Option<Game>> = RefCell::new(None);
-    static STATE: RefCell<State> = RefCell::new(State::Rules(Rules));
+    static GAME: RefCell<Option<Game>> = const { RefCell::new(None) };
+    static STATE: RefCell<State> = const { RefCell::new(State::Rules(Rules)) };
 }
 
 pub struct Raylib {
@@ -44,11 +46,7 @@ impl Game {
 }
 
 fn main() -> anyhow::Result<()> {
-    for _ in 0..100 {
-        eprintln!("{}", rand::random_bool(0.5));
-    }
-
-    let content = TarZstPack::load(io::Cursor::new(CONTENT))?;
+    let mut content = TarZstPack::load(io::Cursor::new(CONTENT))?;
 
     let (mut raylib, thread) = raylib::init()
         .resizable()

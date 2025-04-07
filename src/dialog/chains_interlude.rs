@@ -118,6 +118,10 @@ pub const WAKEUP_CHAIN: DialogChain<InterludeAction> = DialogChain {
         },
         DialogNode {
             text: "That dream still lingers in your mind...",
+            options: &[next(NEXT, 2)],
+        },
+        DialogNode {
+            text: "When you wake up, you’ll definitely want to capture it somehow.",
             options: &[finish(InterludeAction::None)],
         },
     ],

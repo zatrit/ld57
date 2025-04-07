@@ -118,7 +118,7 @@ impl Interlude {
             }
         }
 
-        let mut d = rl.begin_drawing(&thread);
+        let mut d = rl.begin_drawing(thread);
         let mut d2 = d.begin_mode2D(*self.camera);
         self.draw(&mut d2);
 
