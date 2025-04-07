@@ -78,7 +78,3 @@ pub fn update() -> bool {
         None => false,
     })
 }
-
-pub const fn calc_camera_zoom(width: i32, height: i32) -> f32 {
-    (width as f32 / 320.0).min(height as f32 / 180.0)
-}
