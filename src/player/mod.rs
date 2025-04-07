@@ -4,7 +4,9 @@ use std::time::Duration;
 
 use alpacker::data::raylib::PackRaylibExt;
 use raylib::{
-    math::{Rectangle, Vector2}, prelude::{RaylibDraw, RaylibDrawHandle, RaylibMode2D, RaylibShaderModeExt}, RaylibHandle
+    RaylibHandle,
+    math::{Rectangle, Vector2},
+    prelude::{RaylibDraw, RaylibMode2D},
 };
 
 use crate::{
@@ -14,7 +16,7 @@ use crate::{
 };
 
 const PLAYER_SIZE: Vector2 = Vector2::new(8., 22.);
-const PIXELS_PER_SECOND: f32 = 24.;
+const PIXELS_PER_SECOND: f32 = 32.;
 
 pub struct Player {
     pub sprite: Sprite,
@@ -38,6 +40,10 @@ impl Player {
             pos,
             back: false,
         })
+    }
+
+    pub fn rect(&self) -> Rectangle {
+        Rectangle::new(self.pos.x, self.pos.y, PLAYER_SIZE.x, PLAYER_SIZE.y)
     }
 
     pub fn draw(&self, draw: &mut RaylibMode2D<impl RaylibDraw>) {

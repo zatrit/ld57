@@ -7,13 +7,12 @@ use raylib::{
 use std::{f64::consts::PI, time::Duration};
 
 use crate::{
-    Game, Raylib,
-    player::{Player, camera::PlayerCamera},
-    sprite::simple::SimpleSprite,
-    state::State,
+    dialog::{
+        chains::{CARPET_CHAIN, FLOWERS_CHAIN, FRIDGE_CHAIN, GRASS_CHAIN}, handler::{DialogHandler, DialogUpdate}, DialogAction, DialogChain
+    }, interact::Interact, player::{camera::PlayerCamera, Player}, sprite::simple::SimpleSprite, state::State, Game, Raylib
 };
 
-const WALLS: [Rectangle; 13] = [
+const WALLS: &[Rectangle] = &[
     // Front side
     Rectangle::new(78., 142., 81., 12.),
     Rectangle::new(176., 142., 65., 12.),
@@ -31,20 +30,55 @@ const WALLS: [Rectangle; 13] = [
     Rectangle::new(78., 154., 1., 83.),
     Rectangle::new(240., 154., 1., 83.),
     Rectangle::new(78., 237., 163., 1.),
+];
 
+const CARPET: Rectangle = Rectangle::new(161., 96., 62., 47.);
+
+const FLOWER_BED_1: Rectangle = Rectangle::new(93., 158., 66., 16.);
+const FLOWER_BED_2: Rectangle = Rectangle::new(177., 158., 51., 16.);
+const GRASS_PATCH_1: Rectangle = Rectangle::new(80., 193., 80., 47.);
+const GRASS_PATCH_2: Rectangle = Rectangle::new(176., 193., 64., 47.);
+
+pub const INTERACTS: [(Interact, DialogChain<InteractAction>); 6] = [
+    (
+        Interact::new(
+            Rectangle::new(96., 83., 16., 27.),
+            Rectangle::new(96., 96., 16., 16.),
+        ),
+        FRIDGE_CHAIN,
+    ),
+    (Interact::new(CARPET, CARPET), CARPET_CHAIN),
+    (Interact::new(FLOWER_BED_1, FLOWER_BED_1), FLOWERS_CHAIN),
+    (Interact::new(FLOWER_BED_2, FLOWER_BED_2), FLOWERS_CHAIN),
+    (Interact::new(GRASS_PATCH_1, GRASS_PATCH_1), GRASS_CHAIN),
+    (Interact::new(GRASS_PATCH_2, GRASS_PATCH_2), GRASS_CHAIN),
 ];
 
 const BACKGROUND: Color = Color::new(65, 32, 81, 255);
+
+#[repr(u8)]
+#[derive(Debug, Default, Clone, Copy)]
+pub enum InteractAction {
+    TouchGrass,
+    Sleep,
+    #[default]
+    None,
+}
 
 pub struct Level1 {
     house: SimpleSprite,
     roof: SimpleSprite,
     things: SimpleSprite,
     outside: SimpleSprite,
+    blue_bed: SimpleSprite,
 
     player: Player,
     camera: PlayerCamera,
 
+    dialog: DialogHandler<InteractAction>,
+    interacts: [(Interact, DialogChain<InteractAction>); 6],
+
+    touched_grass: bool,
     time: f64,
 }
 
@@ -59,8 +93,13 @@ impl Level1 {
             roof: content.get::<SimpleSprite>(raylib, "roof.png")?,
             things: content.get::<SimpleSprite>(raylib, "things.png")?,
             outside: content.get::<SimpleSprite>(raylib, "outside.png")?,
+            blue_bed: content.get::<SimpleSprite>(raylib, "blue_bed.png")?,
+
+            dialog: DialogHandler::new(&mut raylib.rl),
             player: Player::new(game, Vector2::new(180., 72.))?,
-            camera: PlayerCamera::default(),
+            camera: PlayerCamera::new(Vector2::new(0., 0.75)),
+            interacts: INTERACTS,
+            touched_grass: false,
             time: 0.0,
         })
     }
@@ -75,7 +114,24 @@ impl Level1 {
         self.time += delta as f64;
         let delta = Duration::from_secs_f32(delta);
 
-        self.player.update(rl, delta, controls, &WALLS);
+        match self.dialog.update(controls, rl, delta) {
+            DialogUpdate::Visible => {}
+            DialogUpdate::Hidden => {
+                self.player.update(rl, delta, controls, &WALLS);
+
+                for (interact, dialog) in &mut self.interacts {
+                    if interact.update(&self.player.rect(), controls, rl) {
+                        self.dialog.start_dialog(*dialog);
+                    }
+                }
+            }
+            DialogUpdate::Finished(action) => match action {
+                InteractAction::TouchGrass => self.touched_grass = true,
+                InteractAction::Sleep => todo!(),
+                InteractAction::None => {}
+            },
+        };
+
         self.camera.update(rl, &self.player);
 
         let mut d = rl.begin_drawing(thread);
@@ -87,17 +143,32 @@ impl Level1 {
         d2.draw_texture(&self.things.0, 45, (147. + offset_y) as i32, Color::WHITE);
 
         d2.draw_texture(&self.house.0, 76, 32, Color::WHITE);
+
+        if !self.touched_grass {
+            d2.draw_texture(&self.blue_bed.0, 161, 58, Color::WHITE);
+        }
+
+        for (interact, _) in &mut self.interacts {
+            interact.draw(&mut d2);
+        }
+
         self.player.draw(&mut d2);
 
         let alpha = ((self.player.pos.y - 146.) / 8.).clamp(0., 1.);
         d2.draw_texture(&self.roof.0, 80, 25, Color::WHITE.alpha(alpha));
         d2.draw_texture(&self.outside.0, 20, 127, Color::WHITE.alpha(1. - alpha));
 
-        if cfg!(debug_assertions) {
-            for wall in &WALLS {
+        if cfg!(feature = "extra-debug") {
+            for wall in WALLS {
                 d2.draw_rectangle_rec(wall, Color::GRAY.alpha(0.5));
             }
         }
+
+        self.dialog.draw(
+            self.camera
+                .screen_rect(d2.get_screen_width(), d2.get_screen_height()),
+            &mut d2,
+        );
 
         None
     }

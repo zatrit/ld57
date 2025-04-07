@@ -17,6 +17,8 @@ mod level;
 mod player;
 mod sprite;
 mod state;
+mod dialog;
+mod interact;
 
 const CONTENT: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/content.tar.zst"));
 
