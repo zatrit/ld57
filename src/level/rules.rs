@@ -1,12 +1,11 @@
-use raylib::{
-    color::Color,
-    prelude::{RaylibDraw, RaylibDrawHandle},
-};
+use raylib::{color::Color, prelude::RaylibDraw};
 
 use crate::{Game, Raylib, state::State};
 
 use super::{
-    draw_line, interlude::{Interlude, Plot}, level1::Level1
+    draw_line,
+    interlude::{Interlude, Plot},
+    level1::Level1,
 };
 
 pub struct Rules;
@@ -28,18 +27,17 @@ const RULES: &[&str] = &[
 impl Rules {
     pub fn update(&self, game: &mut Game) -> Option<State> {
         let Raylib { rl, thread } = &mut game.raylib;
+
+        if game.controls.interact.is_pressed(rl) {
+            let plot = Plot::GoTo(Box::new(State::Level1(Level1::new(game).unwrap())));
+            return Some(State::Interlude(Interlude::new(game, plot).unwrap()));
+        }
+
         let mut d = rl.begin_drawing(thread);
 
         d.clear_background(Color::BLACK);
         for (i, line) in RULES.iter().enumerate() {
             draw_line(&mut d, 100 + i as i32 * (FONT_SIZE + 2), line, Color::WHITE);
-        }
-
-        drop(d);
-
-        if game.controls.interact.is_pressed(rl) {
-            let plot = Plot::GoTo(Box::new(State::Level1(Level1::new(game).unwrap())));
-            return Some(State::Interlude(Interlude::new(game, plot).unwrap()));
         }
 
         None

@@ -6,7 +6,6 @@ use controls::Controls;
 use level::rules::Rules;
 use raylib::{
     RaylibHandle, RaylibThread,
-    audio::{Music, RaylibAudio, Wave},
 };
 use state::State;
 
@@ -46,7 +45,7 @@ impl Game {
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut content = TarZstPack::load(io::Cursor::new(CONTENT))?;
+    let content = TarZstPack::load(io::Cursor::new(CONTENT))?;
 
     let (mut raylib, thread) = raylib::init()
         .resizable()
@@ -70,7 +69,7 @@ fn main() -> anyhow::Result<()> {
 
     #[cfg(target_arch = "wasm32")]
     unsafe {
-        wasm::emscripten_set_main_loop(wasm::_update_wasm, 60, 1)
+        wasm::emscripten_set_main_loop(wasm::_update_wasm, 0, 1)
     };
 
     Ok(())
