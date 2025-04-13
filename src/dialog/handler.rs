@@ -89,6 +89,7 @@ impl<A: Action> DialogHandler<A> {
                 dialog.current_letter =
                     (dialog.elapsed.as_secs_f32() * LETTERS_PER_SECOND) as usize;
             }
+            dialog.current_letter = dialog.current_letter.min(text_len);
             return DialogUpdate::Visible;
         }
 
